@@ -1,4 +1,6 @@
 import argparse
+import json
+
 from Bio import SeqIO, AlignIO
 from Bio.Align.Applications import ClustalwCommandline
 
@@ -27,8 +29,7 @@ if __name__ == "__main__":
         print("Total generalized distance: ")
         print(total_distance)
         print("Generalized Sequences: ")
-        for sequence in gen_sequences:
-            print(sequence)
+        print(json.dumps(gen_sequences, indent=2))
 
     elif args.algorithm == "MWM_EXACT":
         sequences = list(SeqIO.parse(args.INFILE, "fasta"))
@@ -40,5 +41,4 @@ if __name__ == "__main__":
         print("Total generalized distance: ")
         print(total_distance)
         print("Generalized Sequences: ")
-        for sequence in gen_sequences:
-            print(sequence)
+        print(json.dumps(gen_sequences, indent=2))

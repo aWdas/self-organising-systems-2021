@@ -40,8 +40,12 @@ def dnala(sequences: [SeqRecord]) -> [str]:
                 reverse_candidates = closest_sequences(c)
                 if s in reverse_candidates:
                     generalized_sequence = generalize(seq_str(sequences[s]), seq_str(sequences[c]))
-                    print(f"Matched {sequences[s]} to {sequences[c]}: {generalized_sequence}")
-                    generalized_sequences.append(generalized_sequence)
+                    print(f"Matched {sequences[s].id} to {sequences[c].id}")
+                    generalized_sequences.append({
+                        "group": [sequences[s].id, sequences[c].id],
+                        "generalizedSeq": generalized_sequence,
+                        "distance": dist_matrix[s][c]
+                    })
                     remaining_sequences.remove(s)
                     remaining_sequences.remove(c)
                     generalized_distance = generalized_distance + dist_matrix[s][c]
