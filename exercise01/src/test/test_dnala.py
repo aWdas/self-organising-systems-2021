@@ -1,4 +1,8 @@
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+
 from ..dnala import generalize, dist, dnala
+
 
 def test_generalize():
     assert generalize("A", "A") == "A"
@@ -11,6 +15,7 @@ def test_generalize():
     assert generalize("A", "B") == "N"
     assert generalize("A", "H") == "H"
 
+
 def test_dist():
     assert dist("AAA", "AAA") == 0
     assert dist("ACC", "CAA") == 6
@@ -19,25 +24,28 @@ def test_dist():
     assert dist("A", "M") == 1
     assert dist("A", "Y") == 3
 
+
 def test_dnala():
     test_sequences = [
-        "DATB",
-        "AATC",
-        "TACC",
-        "AACC",
-        "TAAC",
-        "GTGC"
+        SeqRecord(Seq("DATB")),
+        SeqRecord(Seq("AATC")),
+        SeqRecord(Seq("TACC")),
+        SeqRecord(Seq("AACC")),
+        SeqRecord(Seq("TAAC")),
+        SeqRecord(Seq("GTGC"))
     ]
-    assert dnala(test_sequences) == ["AAYC", "TAMC", "DWKB"]
+    assert dnala(test_sequences) == (["AAYC", "TAMC", "DWKB"], 12)
+
 
 def test_dnala_uneven():
     test_sequences = [
-        "DATB",
-        "AATC",
-        "TACC",
-        "AACC",
-        "----",
-        "TAAC",
-        "GTGC"
+        SeqRecord(Seq("DATB")),
+        SeqRecord(Seq("AATC")),
+        SeqRecord(Seq("TACC")),
+        SeqRecord(Seq("AACC")),
+        SeqRecord(Seq("----")),
+        SeqRecord(Seq("TAAC")),
+        SeqRecord(Seq("GTGC"))
     ]
-    assert dnala(test_sequences) == ["AAYC", "TAMC", "NNNN"]
+    assert dnala(test_sequences) == (["AAYC", "TAMC", "NNNN"], 28)
+
