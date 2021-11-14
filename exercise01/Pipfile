@@ -7,6 +7,8 @@ name = "pypi"
 pytest = "*"
 biopython = "*"
 networkx = "*"
+deap = "*"
+numpy = "*"
 
 [dev-packages]
 
