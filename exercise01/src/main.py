@@ -12,7 +12,7 @@ from .dnala import dnala
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generalize DNA sequences with DNALA, exact MWM, or approximate MWM')
     parser.add_argument('INFILE', help='the FASTA file that holds the DNA sequences to be generalized')
-    parser.add_argument('-a', '--algorithm', default='DNALA', help='the algorithm to apply; DNALA | MWM_EXACT | MWM_GA | PWA_ONLY')
+    parser.add_argument('-a', '--algorithm', default='DNALA', help='the algorithm to apply; DNALA | MWM | GA | PWA_ONLY')
     parser.add_argument('-al', '--alignments', nargs='?', help='a file containing pre-computed alignments for the given INFILE')
     parser.add_argument('-o', '--outfile', nargs='?', help='the file to write the results to')
 
@@ -38,7 +38,11 @@ if __name__ == "__main__":
         print("Generalized Sequences: ")
         print(json.dumps(gen_sequences, indent=2))
 
-    elif args.algorithm == "MWM_EXACT":
+        if args.outfile is not None:
+            with open(args.outfile, "w") as f:
+                f.write(json.dumps(gen_sequences, indent=2))
+
+    elif args.algorithm == "MWM":
         sequences = list(SeqIO.parse(args.INFILE, "fasta"))
 
         alignment_result = None
@@ -46,7 +50,7 @@ if __name__ == "__main__":
             with open(args.alignments, "rb") as f:
                 alignment_result = pickle.load(f)
 
-        print(f"---- Executing MWM EXACT algorithm on aligned sequences ----")
+        print(f"---- Executing MWM algorithm on aligned sequences ----")
         gen_sequences, total_distance = mwm_exact(sequences, alignment_result)
 
         print("---- Results ----")
@@ -55,6 +59,10 @@ if __name__ == "__main__":
         print("Generalized Sequences: ")
         print(json.dumps(gen_sequences, indent=2))
 
+        if args.outfile is not None:
+            with open(args.outfile, "w") as f:
+                f.write(json.dumps(gen_sequences, indent=2))
+
     elif args.algorithm == "PWA_ONLY":
         sequences = list(SeqIO.parse(args.INFILE, "fasta"))
         alignment_result = build_pairwise_alignments(sequences)
@@ -62,7 +70,7 @@ if __name__ == "__main__":
         with open(args.outfile, "wb") as f:
             pickle.dump(alignment_result, f)
 
-    elif args.algorithm == "MWM_GA":
+    elif args.algorithm == "GA":
         sequences = list(SeqIO.parse(args.INFILE, "fasta"))
 
         alignment_result = None
@@ -70,7 +78,7 @@ if __name__ == "__main__":
             with open(args.alignments, "rb") as f:
                 alignment_result = pickle.load(f)
 
-        print(f"---- Executing MWM GA algorithm on aligned sequences ----")
+        print(f"---- Executing GA algorithm on aligned sequences ----")
         gen_sequences, total_distance = mwm_ga(sequences, alignment_result)
 
         print("---- Results ----")
@@ -78,3 +86,7 @@ if __name__ == "__main__":
         print(total_distance)
         print("Generalized Sequences: ")
         print(json.dumps(gen_sequences, indent=2))
+
+        if args.outfile is not None:
+            with open(args.outfile, "w") as f:
+                f.write(json.dumps(gen_sequences, indent=2))
