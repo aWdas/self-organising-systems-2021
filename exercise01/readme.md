@@ -2,8 +2,8 @@
 
 Group Members:
 - Jan Hadl (01609664)
-- Luzia Corrpaci
-- Markus
+- Luzia Corpaci (12037284)
+- Markus Fleischmann (11813846)
 
 ## Setup
 The code for this exercise was tested with Python 3.9 and has some dependencies. You can install the dependencies with `pip` by executing `pip install -r requirements.txt` or, if you already have `pipenv` set up, by executing `pipenv install` (which will read the dependencies from `Pipfile`). In case you use regular `pip`, we recommend that you install the project dependencies into a virtualenv to not pollute your global package list and avoid version conflicts. 

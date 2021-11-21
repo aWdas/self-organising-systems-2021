@@ -277,5 +277,3 @@ cython_debug/
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,jetbrains+all,java,python
 
 scratch.fasta
-*.aln
-*.dnd
