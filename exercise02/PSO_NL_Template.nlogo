@@ -69,33 +69,44 @@ end
 
 
 ; The function initialize-topology initializes a search land scape (topology)
-; which represents the fittness function
+; which represents the fitness function
 ; each point in the search space (each patch) should be set a value
 
 to initialize-topology
   set max-x max [pxcor] of patches
   set max-y max [pycor] of patches
   ask patches [
+     let fitness 0
      if fitness_function = "Example function"
-       [set val example_function pxcor pycor]
+       [set fitness example_function pxcor pycor]
 
      if fitness_function = "Fitness function 1"
-       [set val fittness_function_1 pxcor pycor]
+       [set fitness fitness_function_1 pxcor pycor]
 
      if fitness_function  = "Fitness function 2"
-       [set val fittness_function_2 pxcor pycor]
+       [set fitness fitness_function_2 pxcor pycor]
 
      if fitness_function = "Fitness function 3"
-       [set val fittness_function_3 pxcor pycor]
+       [set fitness fitness_function_3 pxcor pycor]
 
      if fitness_function = "Fitness function 4"
-       [set val fittness_function_4 pxcor pycor]
+       [set fitness fitness_function_4 pxcor pycor]
 
      if fitness_function  = "Fitness function 5"
-       [set val fittness_function_5 pxcor pycor]
+       [set fitness fitness_function_5 pxcor pycor]
 
      if fitness_function = "Fitness function 6"
-       [set val fittness_function_6 pxcor pycor]
+       [set fitness fitness_function_6 pxcor pycor]
+
+     ; if constraints are handled via the penalty method,
+     ; add the penalty term to the patch value
+     ifelse (constraint_handling_method = "Penalty Method" and (constraints = TRUE))
+      [
+        set val (fitness + r * (min list 0 (constraint-value pxcor pycor)) ^ 2)
+      ]
+      [
+        set val fitness
+      ]
 
   ]
 
@@ -106,13 +117,23 @@ to initialize-topology
     ;normalize the values to be between 0 and 1
     set val (val - min-val) / (max-val - min-val)
 
-    ;check whether the patch violates a constrain
-    ;if yes set its value to zero and color to red
+    ;check whether the patch violates a constraint
+    ;if yes set its color to red
     ;otherwise, set the patch color according to its value
     ifelse  ((violates pxcor  pycor) and (constraints = TRUE))
      [
-         set val 0
-         set pcolor 15
+
+
+         ; only set the value to 0 if the constraint handling method is not the penalty method
+         ; since in that case, the constraint violation was already considered in the patch values
+         ifelse not (constraint_handling_method = "Penalty Method")
+          [
+            set pcolor red
+            set val 0
+          ]
+          [
+            set pcolor scale-color red val 0.0  1
+          ]
      ]
 
      [
@@ -166,7 +187,7 @@ to initialize-agents
 end
 
 ; The global best point coordinates are initialized as the coordinates
-; of the patch with best fittness value
+; of the patch with best fitness value
 ;
 to initialize-global-best
   set global-best-x  (max [pxcor] of patches)
@@ -299,21 +320,21 @@ to-report example_function [x y] ;
 end
 
 ; Schaffer function
-to-report fittness_function_1 [x y]
+to-report fitness_function_1 [x y]
   let x1 100 / max-x * x;scale x to have a value from -100 to 100
   let y1 100 / max-y * y;scale y to have a value from -100 to 100
   report 0.5 + sin(x1 ^ 2 - y1 ^ 2) ^ 2 - 0.5 / (1 + 0.001 * (x1 ^ 2 + y1 ^ 2)) ^ 2;
 end
 
 ; Eggholder function
-to-report fittness_function_2 [x y]
+to-report fitness_function_2 [x y]
   let x1 51200 / max-x * x;scale x to have a value from -51200 to 51200
   let y1 51200 / max-y * y;scale y to have a value from -51200 to 51200
   report -1 * (y1 + 47) * sin(sqrt (abs ( x1 / 2 + (y1 + 47)))) - x1 * sin(sqrt(abs(x1 - (y1 + 47))))
 end
 
 ; Easom function
-to-report fittness_function_3 [x y]
+to-report fitness_function_3 [x y]
   report cos(x) * cos(y) * e ^ ( -1 * ((x - pi) ^ 2 + (y - pi) ^ 2));
 end
 
@@ -322,118 +343,147 @@ end
 ; Since the implementation in the template is maximum-based,
 ; we chose to implement a negative variant of the function to avoid that
 ; the optimum is at the edge of the search space.
-to-report fittness_function_4 [x y];
+to-report fitness_function_4 [x y];
   report -1 * ( (x + 2 * y - 7) ^ 2 + (2 * x + y - 5) ^ 2)
 end
 
 
 ; dummy random fitness function to be implemented by students
-to-report fittness_function_5 [x y]
+to-report fitness_function_5 [x y]
   report random-normal 0 1;
 end
 
 ; dummy random fitness function to be implemented by students
-to-report fittness_function_6 [x y]
+to-report fitness_function_6 [x y]
   report random-normal 0 1;
 end
 
 
-; constraint example
-to-report constrain_example [x y]
-  report (x ^ 2 > y ^ 2)
-end
-
-; dummy random constrinat to be implemented by students
-to-report constrain_1 [x y]
-  report FALSE
-end
-
-; dummy random constrinat to be implemented by students
-to-report constrain_2 [x y]
-  report FALSE
-end
-
-; dummy random constrinat to be implemented by students
-to-report constrain_3 [x y]
-  report FALSE
-end
-
-; dummy random constrinat to be implemented by students
-to-report constrain_4 [x y]
-  report FALSE
-end
-
-; dummy random constrinat to be implemented by students
-to-report constrain_5 [x y]
-  report FALSE
-end
-
-; dummy random constrinat to be implemented by students
-to-report constrain_6 [x y]
-  report FALSE
-end
-
-; dummy random constrinat to be implemented by students
-to-report constrain_7 [x y]
-  report FALSE
+; CONSTRAINTS
+; the constraint functions were changed from returning a boolean
+; to returning a number that is > 0 if the constraint is satisfied and <= 0 if it isn't
+to-report constraint_example [x y]
+  report (x ^ 2 - y ^ 2)
 end
 
 
-to-report constrain_8 [x y]
-  ifelse sin(8 * x) < sin(8 * y)
-  [report TRUE]
-  [report FALSE]
-
+to-report constraint_1 [x y]
+  report (6000 - (x ^ 2 + y ^ 2))
 end
 
-to-report constrain_9 [x y]
-  ifelse sin(x) * sin(y) < 0.2
-  [report TRUE]
-  [report FALSE]
 
+to-report constraint_2 [x y]
+  report (max list (x - 3 * y) (y - 3 * x))
 end
 
-to-report constrain_10 [x y]
-  ifelse   tan(x * y) < 1
-  [report TRUE]
-  [report FALSE]
 
+to-report constraint_3 [x y]
+  report (max list (x - (y + 20)) ((y - 20) - x))
+end
+
+
+to-report constraint_4 [x y]
+  report (min list (9000 - (x ^ 2 + y ^ 2)) ((x ^ 2 + y ^ 2) - 4000))
+end
+
+
+to-report constraint_5 [x y]
+  report (x - y)
+end
+
+
+to-report constraint_6 [x y]
+  report (y ^ 2 - 10 * x)
+end
+
+
+to-report constraint_7 [x y]
+  report (tan(4 * y) - tan(2 * x))
+end
+
+
+to-report constraint_8 [x y]
+  report (sin(8 * y) - sin(8 * x))
+end
+
+to-report constraint_9 [x y]
+  report (0.2 - sin(x) * sin(y))
+end
+
+to-report constraint_10 [x y]
+  report (1 - tan(x * y))
 end
 
 
 to-report violates [x y]
   if ( Constraint = "Constraint 1")
-  [report constrain_1 x y]
+  [report constraint_1 x y <= 0]
 
   if ( Constraint = "Constraint 2")
-  [report constrain_2 x y]
+  [report constraint_2 x y <= 0]
 
   if ( Constraint = "Constraint 3")
-  [report constrain_3 x y]
+  [report constraint_3 x y <= 0]
 
   if ( Constraint = "Constraint 4")
-  [report constrain_4 x y]
+  [report constraint_4 x y <= 0]
 
   if ( Constraint = "Constraint 5")
-  [report constrain_5 x y]
+  [report constraint_5 x y <= 0]
 
   if ( Constraint = "Constraint 6")
-  [report constrain_6 x y]
+  [report constraint_6 x y <= 0]
 
   if ( Constraint = "Constraint 7")
-  [report constrain_7 x y]
+  [report constraint_7 x y <= 0]
 
   if ( Constraint = "Constraint 8")
-  [report constrain_8 x y]
+  [report constraint_8 x y <= 0]
 
   if ( Constraint = "Constraint 9")
-  [report constrain_9 x y]
+  [report constraint_9 x y <= 0]
 
   if ( Constraint = "Constraint 10")
-  [report constrain_10 x y]
+  [report constraint_10 x y <= 0]
 
   if ( Constraint = "Example")
-  [report constrain_example x y]
+  [report constraint_example x y <= 0]
+
+end
+
+to-report constraint-value [x y]
+  if ( Constraint = "Constraint 1")
+  [report constraint_1 x y]
+
+  if ( Constraint = "Constraint 2")
+  [report constraint_2 x y]
+
+  if ( Constraint = "Constraint 3")
+  [report constraint_3 x y]
+
+  if ( Constraint = "Constraint 4")
+  [report constraint_4 x y]
+
+  if ( Constraint = "Constraint 5")
+  [report constraint_5 x y]
+
+  if ( Constraint = "Constraint 6")
+  [report constraint_6 x y]
+
+  if ( Constraint = "Constraint 7")
+  [report constraint_7 x y]
+
+  if ( Constraint = "Constraint 8")
+  [report constraint_8 x y]
+
+  if ( Constraint = "Constraint 9")
+  [report constraint_9 x y]
+
+  if ( Constraint = "Constraint 10")
+  [report constraint_10 x y]
+
+  if ( Constraint = "Example")
+  [report constraint_example x y]
 
 end
 
@@ -682,7 +732,7 @@ CHOOSER
 fitness_function
 fitness_function
 "Example function" "Fitness function 1" "Fitness function 2" "Fitness function 3" "Fitness function 4" "Fitness function 5" "Fitness function 6"
-2
+1
 
 SWITCH
 10
@@ -691,7 +741,7 @@ SWITCH
 143
 Constraints
 Constraints
-1
+0
 1
 -1000
 
@@ -731,7 +781,7 @@ CHOOSER
 constraint_handling_method
 constraint_handling_method
 "Rejection Method" "Penalty Method"
-0
+1
 
 INPUTBOX
 320
@@ -797,7 +847,7 @@ CHOOSER
 Constraint
 Constraint
 "Example" "Constraint 1" "Constraint 2" "Constraint 3" "Constraint 4" "Constraint 5" "Constraint 6" "Constraint 7" "Constraint 8" "Constraint 9" "Constraint 10"
-0
+2
 
 PLOT
 10
@@ -817,9 +867,19 @@ false
 PENS
 "default" 1.0 0 -5298144 true "" "plot global-best-val"
 
+INPUTBOX
+10
+510
+157
+570
+r
+2.0E-8
+1
+0
+Number
+
 @#$#@#$#@
 ## WHAT IS IT?
-
 @#$#@#$#@
 default
 true
