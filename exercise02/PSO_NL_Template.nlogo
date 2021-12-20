@@ -102,7 +102,7 @@ to initialize-topology
      ; add the penalty term to the patch value
      ifelse (constraint_handling_method = "Penalty Method" and (constraints = TRUE))
       [
-        set val (fitness + r * (min list 0 (constraint-value pxcor pycor)) ^ 2)
+        set val (fitness - r * (min list 0 (constraint-value pxcor pycor)) ^ 2)
       ]
       [
         set val fitness
@@ -335,7 +335,7 @@ end
 
 ; Easom function
 to-report fitness_function_easom [x y]
-  report cos(x) * cos(y) * e ^ ( -1 * ((x - pi) ^ 2 + (y - pi) ^ 2));
+  report -1 * cos(x) * cos(y) * e ^ ( -1 * ((x - pi) ^ 2 + (y - pi) ^ 2));
 end
 
 
