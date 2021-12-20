@@ -80,17 +80,17 @@ to initialize-topology
      if fitness_function = "Example function"
        [set fitness example_function pxcor pycor]
 
-     if fitness_function = "Fitness function 1"
-       [set fitness fitness_function_1 pxcor pycor]
+     if fitness_function = "Fitness function Schaffer"
+       [set fitness fitness_schaffer pxcor pycor]
 
-     if fitness_function  = "Fitness function 2"
-       [set fitness fitness_function_2 pxcor pycor]
+     if fitness_function  = "Fitness function Eggholder"
+       [set fitness fitness_function_eggholder pxcor pycor]
 
-     if fitness_function = "Fitness function 3"
-       [set fitness fitness_function_3 pxcor pycor]
+     if fitness_function = "Fitness function Easom"
+       [set fitness fitness_function_easom pxcor pycor]
 
-     if fitness_function = "Fitness function 4"
-       [set fitness fitness_function_4 pxcor pycor]
+     if fitness_function = "Fitness function Booth"
+       [set fitness fitness_function_booth pxcor pycor]
 
      if fitness_function  = "Fitness function 5"
        [set fitness fitness_function_5 pxcor pycor]
@@ -320,21 +320,21 @@ to-report example_function [x y] ;
 end
 
 ; Schaffer function
-to-report fitness_function_1 [x y]
+to-report fitness_schaffer [x y]
   let x1 100 / max-x * x;scale x to have a value from -100 to 100
   let y1 100 / max-y * y;scale y to have a value from -100 to 100
   report 0.5 + sin(x1 ^ 2 - y1 ^ 2) ^ 2 - 0.5 / (1 + 0.001 * (x1 ^ 2 + y1 ^ 2)) ^ 2;
 end
 
 ; Eggholder function
-to-report fitness_function_2 [x y]
+to-report fitness_function_eggholder [x y]
   let x1 51200 / max-x * x;scale x to have a value from -51200 to 51200
   let y1 51200 / max-y * y;scale y to have a value from -51200 to 51200
   report -1 * (y1 + 47) * sin(sqrt (abs ( x1 / 2 + (y1 + 47)))) - x1 * sin(sqrt(abs(x1 - (y1 + 47))))
 end
 
 ; Easom function
-to-report fitness_function_3 [x y]
+to-report fitness_function_easom [x y]
   report cos(x) * cos(y) * e ^ ( -1 * ((x - pi) ^ 2 + (y - pi) ^ 2));
 end
 
@@ -343,7 +343,7 @@ end
 ; Since the implementation in the template is maximum-based,
 ; we chose to implement a negative variant of the function to avoid that
 ; the optimum is at the edge of the search space.
-to-report fitness_function_4 [x y];
+to-report fitness_function_booth [x y];
   report -1 * ( (x + 2 * y - 7) ^ 2 + (2 * x + y - 5) ^ 2)
 end
 
@@ -727,12 +727,12 @@ NIL
 CHOOSER
 10
 10
-155
+202
 55
 fitness_function
 fitness_function
-"Example function" "Fitness function 1" "Fitness function 2" "Fitness function 3" "Fitness function 4" "Fitness function 5" "Fitness function 6"
-1
+"Example function" "Fitness function Schaffer" "Fitness function Eggholder" "Fitness function Easom" "Fitness function Booth" "Fitness function 5" "Fitness function 6"
+0
 
 SWITCH
 10
@@ -847,7 +847,7 @@ CHOOSER
 Constraint
 Constraint
 "Example" "Constraint 1" "Constraint 2" "Constraint 3" "Constraint 4" "Constraint 5" "Constraint 6" "Constraint 7" "Constraint 8" "Constraint 9" "Constraint 10"
-2
+9
 
 PLOT
 10
