@@ -7,7 +7,7 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
+extensions [matrix]
 
 ; The additional (customized) properties of the
 ; patches (grid cells) are to be defined here
@@ -81,7 +81,7 @@ to initialize-topology
        [set fitness example_function pxcor pycor]
 
      if fitness_function = "Fitness function Schaffer"
-       [set fitness fitness_schaffer pxcor pycor]
+       [set fitness fitness_function_schaffer pxcor pycor]
 
      if fitness_function  = "Fitness function Eggholder"
        [set fitness fitness_function_eggholder pxcor pycor]
@@ -92,11 +92,14 @@ to initialize-topology
      if fitness_function = "Fitness function Booth"
        [set fitness fitness_function_booth pxcor pycor]
 
-     if fitness_function  = "Fitness function 5"
-       [set fitness fitness_function_5 pxcor pycor]
+     if fitness_function  = "Fitness function Langermann"
+       [set fitness fitness_function_langermann pxcor pycor]
 
-     if fitness_function = "Fitness function 6"
-       [set fitness fitness_function_6 pxcor pycor]
+     if fitness_function = "Fitness function Schwefel"
+       [set fitness fitness_function_schwefel pxcor pycor]
+
+     if fitness_function = "Fitness function Shubert"
+       [set fitness fitness_function_shubert pxcor pycor]
 
      ; if constraints are handled via the penalty method,
      ; add the penalty term to the patch value
@@ -320,10 +323,10 @@ to-report example_function [x y] ;
 end
 
 ; Schaffer function
-to-report fitness_schaffer [x y]
-  let x1 100 / max-x * x;scale x to have a value from -100 to 100
-  let y1 100 / max-y * y;scale y to have a value from -100 to 100
-  report 0.5 + sin(x1 ^ 2 - y1 ^ 2) ^ 2 - 0.5 / (1 + 0.001 * (x1 ^ 2 + y1 ^ 2)) ^ 2;
+to-report fitness_function_schaffer [x y]
+  let x1 (100 / max-x * x);scale x to have a value from -100 to 100
+  let y1 (100 / max-y * y);scale y to have a value from -100 to 100
+  report 0.5 + (sin(x1 ^ 2 - y1 ^ 2) ^ 2 - 0.5) / ((1 + 0.001 * (x1 ^ 2 + y1 ^ 2)) ^ 2);
 end
 
 ; Eggholder function
@@ -335,7 +338,7 @@ end
 
 ; Easom function
 to-report fitness_function_easom [x y]
-  report -1 * cos(x) * cos(y) * e ^ ( -1 * ((x - pi) ^ 2 + (y - pi) ^ 2));
+  report cos(x) * cos(y) * e ^ ( -1 * ((x - pi) ^ 2 + (y - pi) ^ 2));
 end
 
 
@@ -348,16 +351,46 @@ to-report fitness_function_booth [x y];
 end
 
 
-; dummy random fitness function to be implemented by students
-to-report fitness_function_5 [x y]
-  report random-normal 0 1;
+; Langermann function
+; parameter values (m, c, A) were taken from https://www.sfu.ca/~ssurjano/langer.html
+; this source also noted that the function is usually evaluated on in a range of [0,10]
+to-report fitness_function_langermann [x y]
+  let m 5
+  let c (list 1 2 5 2 3)
+  let A matrix:from-row-list [[3 5] [5 2] [2 1] [1 4] [7 9]]
+  let x1 (10 / (2 * max-x) * (max-x + x));
+  let y1 (10 / (2 * max-y) * (max-y + y));
+
+  report (sum (map [[i] -> (item i c) * (langermann_exp x1 y1 i A) * (langermann_cos x1 y1 i A)] (range m)));
 end
 
-; dummy random fitness function to be implemented by students
-to-report fitness_function_6 [x y]
-  report random-normal 0 1;
+to-report langermann_exp [x y i A]
+  report exp (-1 * (1 / pi) * ((x - (matrix:get A i 0)) ^ 2 + (y - (matrix:get A i 1)) ^ 2))
 end
 
+to-report langermann_cos [x y i A]
+  report cos (pi * ((x - (matrix:get A i 0)) ^ 2 + (y - (matrix:get A i 1)) ^ 2))
+end
+
+; Schwefel function
+to-report fitness_function_schwefel [x y]
+  let x1 ((512 / max-x) * x) ; scale x to have a value from -512 to 512
+  let y1 ((512 / max-y) * y) ; scale y to have a value from -512 to 512
+  let alpha 418.9829
+
+  report (alpha * 2 - x1 * sin (sqrt (abs x1)) - y1 * sin (sqrt (abs y1)));
+end
+
+; Shubert function
+to-report fitness_function_shubert [x y]
+  let x1 (100 / max-x * x) ; scale x to have a value from -100 to 100
+  let y1 (100 / max-y * y) ; scale y to have a value from -100 to 100
+  report (shubert_part x1 + shubert_part y1);
+end
+
+to-report shubert_part [v]
+  report (sum (map [[i] -> i * cos ((i + 1) * v + i)] (range 1 6)))
+end
 
 ; CONSTRAINTS
 ; the constraint functions were changed from returning a boolean
@@ -585,9 +618,9 @@ NIL
 0
 
 SLIDER
-165
+195
 10
-305
+335
 43
 population-size
 population-size
@@ -608,7 +641,7 @@ personal-confidence
 personal-confidence
 0
 2
-1.3
+1.4
 0.1
 1
 NIL
@@ -623,7 +656,7 @@ swarm-confidence
 swarm-confidence
 0
 2
-0.2
+0.1
 0.1
 1
 NIL
@@ -638,7 +671,7 @@ particle-inertia
 particle-inertia
 0
 1.0
-1.0
+0.69
 0.01
 1
 NIL
@@ -669,10 +702,10 @@ CHOOSER
 trails-mode
 trails-mode
 "None" "Traces"
-0
+1
 
 SLIDER
-320
+345
 10
 490
 43
@@ -680,7 +713,7 @@ particle-speed-limit
 particle-speed-limit
 1
 20
-10.0
+7.0
 1
 1
 NIL
@@ -694,7 +727,7 @@ CHOOSER
 highlight-mode
 highlight-mode
 "None" "Best found" "True best"
-1
+2
 
 MONITOR
 320
@@ -727,12 +760,12 @@ NIL
 CHOOSER
 10
 10
-202
+185
 55
 fitness_function
 fitness_function
-"Example function" "Fitness function Schaffer" "Fitness function Eggholder" "Fitness function Easom" "Fitness function Booth" "Fitness function 5" "Fitness function 6"
-0
+"Example function" "Fitness function Langermann" "Fitness function Schwefel" "Fitness function Shubert" "Fitness function Schaffer" "Fitness function Eggholder" "Fitness function Easom" "Fitness function Booth"
+2
 
 SWITCH
 10
@@ -741,7 +774,7 @@ SWITCH
 143
 Constraints
 Constraints
-0
+1
 1
 -1000
 
@@ -847,7 +880,7 @@ CHOOSER
 Constraint
 Constraint
 "Example" "Constraint 1" "Constraint 2" "Constraint 3" "Constraint 4" "Constraint 5" "Constraint 6" "Constraint 7" "Constraint 8" "Constraint 9" "Constraint 10"
-9
+5
 
 PLOT
 10
@@ -870,10 +903,10 @@ PENS
 INPUTBOX
 10
 510
-157
+140
 570
 r
-2.0E-8
+1.0E-5
 1
 0
 Number
