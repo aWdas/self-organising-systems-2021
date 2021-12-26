@@ -315,3 +315,4 @@ Temporary Items
 # Temporary NetLogo files
 *.tmp.nlogo
 backup.txt
+.Rproj.user

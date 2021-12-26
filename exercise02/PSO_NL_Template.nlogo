@@ -135,7 +135,7 @@ to initialize-topology
             set val 0
           ]
           [
-            set pcolor scale-color red val 0.0  1
+            set pcolor scale-color gray val 0.0  1
           ]
      ]
 
@@ -215,7 +215,8 @@ to iterate
 
   set iterations (iterations + 1)
 
-  if global-best-val = [val] of true-best-patch
+  if iterations >= max-iterations
+  ; if global-best-val = [val] of true-best-patch
     [ stop ]
 
   tick
@@ -485,39 +486,42 @@ to-report violates [x y]
 end
 
 to-report constraint-value [x y]
+  let constraint-val 0
+
   if ( Constraint = "Constraint 1")
-  [report constraint_1 x y]
+  [set constraint-val constraint_1 x y]
 
   if ( Constraint = "Constraint 2")
-  [report constraint_2 x y]
+  [set constraint-val constraint_2 x y]
 
   if ( Constraint = "Constraint 3")
-  [report constraint_3 x y]
+  [set constraint-val constraint_3 x y]
 
   if ( Constraint = "Constraint 4")
-  [report constraint_4 x y]
+  [set constraint-val constraint_4 x y]
 
   if ( Constraint = "Constraint 5")
-  [report constraint_5 x y]
+  [set constraint-val constraint_5 x y]
 
   if ( Constraint = "Constraint 6")
-  [report constraint_6 x y]
+  [set constraint-val constraint_6 x y]
 
   if ( Constraint = "Constraint 7")
-  [report constraint_7 x y]
+  [set constraint-val constraint_7 x y]
 
   if ( Constraint = "Constraint 8")
-  [report constraint_8 x y]
+  [set constraint-val constraint_8 x y]
 
   if ( Constraint = "Constraint 9")
-  [report constraint_9 x y]
+  [set constraint-val constraint_9 x y]
 
   if ( Constraint = "Constraint 10")
-  [report constraint_10 x y]
+  [set constraint-val constraint_10 x y]
 
   if ( Constraint = "Example")
-  [report constraint_example x y]
+  [set constraint-val constraint_example x y]
 
+  report min list (max list constraint-val -1) 1
 end
 
 to update-highlight
@@ -641,7 +645,7 @@ personal-confidence
 personal-confidence
 0
 2
-1.4
+0.4
 0.1
 1
 NIL
@@ -656,7 +660,7 @@ swarm-confidence
 swarm-confidence
 0
 2
-0.1
+0.8
 0.1
 1
 NIL
@@ -671,7 +675,7 @@ particle-inertia
 particle-inertia
 0
 1.0
-0.69
+0.6
 0.01
 1
 NIL
@@ -702,7 +706,7 @@ CHOOSER
 trails-mode
 trails-mode
 "None" "Traces"
-1
+0
 
 SLIDER
 345
@@ -713,7 +717,7 @@ particle-speed-limit
 particle-speed-limit
 1
 20
-7.0
+10.0
 1
 1
 NIL
@@ -765,7 +769,7 @@ CHOOSER
 fitness_function
 fitness_function
 "Example function" "Fitness function Langermann" "Fitness function Schwefel" "Fitness function Shubert" "Fitness function Schaffer" "Fitness function Eggholder" "Fitness function Easom" "Fitness function Booth"
-2
+5
 
 SWITCH
 10
@@ -880,7 +884,7 @@ CHOOSER
 Constraint
 Constraint
 "Example" "Constraint 1" "Constraint 2" "Constraint 3" "Constraint 4" "Constraint 5" "Constraint 6" "Constraint 7" "Constraint 8" "Constraint 9" "Constraint 10"
-5
+10
 
 PLOT
 10
@@ -906,10 +910,25 @@ INPUTBOX
 140
 570
 r
-1.0E-5
+100000.0
 1
 0
 Number
+
+SLIDER
+210
+535
+382
+568
+max-iterations
+max-iterations
+0
+100
+100.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -1200,6 +1219,267 @@ NetLogo 6.2.2
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="inertia_penalty_constraints_schaffer" repetitions="20" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>iterate</go>
+    <final>file-open (word "netlogo_" behaviorspace-experiment-name "_coordinates.csv")
+let i 0
+ask turtles
+[ 
+  file-type fitness_function
+  file-type ","
+  file-type behaviorspace-run-number 
+  file-type ","
+  file-type particle-inertia
+  file-type ","
+  file-type i 
+  file-type ","
+  file-type xcor 
+  file-type ","
+  file-print ycor
+  set i (i + 1)
+]
+file-close</final>
+    <metric>standard-deviation [xcor] of turtles</metric>
+    <metric>standard-deviation [ycor] of turtles</metric>
+    <enumeratedValueSet variable="trails-mode">
+      <value value="&quot;Traces&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="particle-inertia" first="0.05" step="0.05" last="0.5"/>
+    <enumeratedValueSet variable="path-to-load">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="swarm-confidence">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="highlight-mode">
+      <value value="&quot;True best&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="constraint_handling_method">
+      <value value="&quot;Penalty Method&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="r">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraint">
+      <value value="&quot;Constraint 10&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="fitness_function">
+      <value value="&quot;Fitness function Schaffer&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-iterations">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraints">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="path-to-save">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="population-size">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="particle-speed-limit">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="personal-confidence">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="inertia_penalty_constraints_shubert" repetitions="20" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>iterate</go>
+    <final>file-open (word "netlogo_" behaviorspace-experiment-name "_coordinates.csv")
+let i 0
+ask turtles
+[ 
+  file-type fitness_function
+  file-type ","
+  file-type behaviorspace-run-number 
+  file-type ","
+  file-type particle-inertia
+  file-type ","
+  file-type i 
+  file-type ","
+  file-type xcor 
+  file-type ","
+  file-print ycor
+  set i (i + 1)
+]
+file-close</final>
+    <metric>standard-deviation [xcor] of turtles</metric>
+    <metric>standard-deviation [ycor] of turtles</metric>
+    <enumeratedValueSet variable="trails-mode">
+      <value value="&quot;Traces&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="particle-inertia" first="0.05" step="0.05" last="0.5"/>
+    <enumeratedValueSet variable="path-to-load">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="swarm-confidence">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="highlight-mode">
+      <value value="&quot;True best&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="constraint_handling_method">
+      <value value="&quot;Penalty Method&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="r">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraint">
+      <value value="&quot;Constraint 10&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="fitness_function">
+      <value value="&quot;Fitness function Shubert&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-iterations">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraints">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="path-to-save">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="population-size">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="particle-speed-limit">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="personal-confidence">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="inertia_penalty_constraints_eggholder" repetitions="20" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>iterate</go>
+    <final>file-open (word "netlogo_" behaviorspace-experiment-name "_coordinates.csv")
+let i 0
+ask turtles
+[ 
+  file-type fitness_function
+  file-type ","
+  file-type behaviorspace-run-number 
+  file-type ","
+  file-type particle-inertia
+  file-type ","
+  file-type i 
+  file-type ","
+  file-type xcor 
+  file-type ","
+  file-print ycor
+  set i (i + 1)
+]
+file-close</final>
+    <metric>standard-deviation [xcor] of turtles</metric>
+    <metric>standard-deviation [ycor] of turtles</metric>
+    <enumeratedValueSet variable="trails-mode">
+      <value value="&quot;Traces&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="particle-inertia" first="0.05" step="0.05" last="0.5"/>
+    <enumeratedValueSet variable="path-to-load">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="swarm-confidence">
+      <value value="0.1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="highlight-mode">
+      <value value="&quot;True best&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="constraint_handling_method">
+      <value value="&quot;Penalty Method&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="r">
+      <value value="100000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraint">
+      <value value="&quot;Constraint 10&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="fitness_function">
+      <value value="&quot;Fitness function Eggholder&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-iterations">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraints">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="path-to-save">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="population-size">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="particle-speed-limit">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="personal-confidence">
+      <value value="1.2"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="population_size" repetitions="20" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>iterate</go>
+    <final>file-open (word "netlogo_" behaviorspace-experiment-name "_best_vals.csv")
+
+file-type behaviorspace-run-number 
+file-type ","
+file-type fitness_function
+file-type ","
+file-type population-size
+file-type ","
+file-type global-best-val</final>
+    <enumeratedValueSet variable="trails-mode">
+      <value value="&quot;None&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="particle-inertia">
+      <value value="0.6"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="path-to-load">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="swarm-confidence">
+      <value value="0.8"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="highlight-mode">
+      <value value="&quot;True best&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="constraint_handling_method">
+      <value value="&quot;Penalty Method&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="r">
+      <value value="100000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraint">
+      <value value="&quot;Constraint 10&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="fitness_function">
+      <value value="&quot;Fitness function Schaffer&quot;"/>
+      <value value="&quot;Fitness function Shubert&quot;"/>
+      <value value="&quot;Fitness function Eggholder&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-iterations">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraints">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="path-to-save">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="population-size" first="5" step="5" last="100"/>
+    <enumeratedValueSet variable="personal-confidence">
+      <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="particle-speed-limit">
+      <value value="10"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
