@@ -216,9 +216,10 @@ to iterate
   set iterations (iterations + 1)
 
   if iterations >= max-iterations
-  ; if global-best-val = [val] of true-best-patch
     [ stop ]
 
+  if global-best-val = [val] of true-best-patch
+    [ stop ]
   tick
 
 end
@@ -630,7 +631,6 @@ population-size
 population-size
 1
 100
-100.0
 1
 1
 NIL
@@ -645,7 +645,7 @@ personal-confidence
 personal-confidence
 0
 2
-0.4
+0.5
 0.1
 1
 NIL
@@ -660,7 +660,7 @@ swarm-confidence
 swarm-confidence
 0
 2
-0.8
+0.5
 0.1
 1
 NIL
@@ -675,7 +675,7 @@ particle-inertia
 particle-inertia
 0
 1.0
-0.6
+1.0
 0.01
 1
 NIL
@@ -1474,6 +1474,66 @@ file-type global-best-val</final>
     <steppedValueSet variable="population-size" first="5" step="5" last="100"/>
     <enumeratedValueSet variable="personal-confidence">
       <value value="0.4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="particle-speed-limit">
+      <value value="10"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="inertia_convergence" repetitions="30" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>iterate</go>
+    <final>file-open (word "netlogo_" behaviorspace-experiment-name "_best_vals.csv")
+file-type behaviorspace-run-number 
+file-type ","
+file-type fitness_function
+file-type ","
+file-type particle-inertia
+file-type ","
+file-type iterations
+file-type ","
+file-print global-best-val
+file-close</final>
+    <enumeratedValueSet variable="trails-mode">
+      <value value="&quot;None&quot;"/>
+    </enumeratedValueSet>
+    <steppedValueSet variable="particle-inertia" first="0.05" step="0.05" last="1"/>
+    <enumeratedValueSet variable="path-to-load">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="swarm-confidence">
+      <value value="0.5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="highlight-mode">
+      <value value="&quot;True best&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="constraint_handling_method">
+      <value value="&quot;Penalty Method&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="r">
+      <value value="100000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraint">
+      <value value="&quot;Constraint 10&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="fitness_function">
+      <value value="&quot;Fitness function Schaffer&quot;"/>
+      <value value="&quot;Fitness function Shubert&quot;"/>
+      <value value="&quot;Fitness function Eggholder&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-iterations">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Constraints">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="path-to-save">
+      <value value="&quot;filename.txt&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="population-size">
+      <value value="25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="personal-confidence">
+      <value value="0.5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="particle-speed-limit">
       <value value="10"/>
