@@ -2,7 +2,7 @@
 ; TU Wien
 ;
 ; Self-Organizing Systems
-; Assignment 3
+; Assignment 2
 ; Author: Abdel Aziz Taha
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1432,7 +1432,9 @@ file-type fitness_function
 file-type ","
 file-type population-size
 file-type ","
-file-type global-best-val</final>
+file-print global-best-val
+
+file-close</final>
     <enumeratedValueSet variable="trails-mode">
       <value value="&quot;None&quot;"/>
     </enumeratedValueSet>

@@ -7,7 +7,7 @@ install.packages("caret")
 library(caret)
 
 
-std_dev_position <- function(X, Y) {
+rms <- function(X, Y) {
   x_mean <- mean(X)
   y_mean <- mean(Y)
   n <- length(X)
@@ -19,39 +19,39 @@ std_dev_position <- function(X, Y) {
 schaffer <- read.csv("netlogo_inertia_penalty_constraints_schaffer_coordinates.csv", 
                      header = FALSE, col.names = c("fitness_function", "run_nr", "inertia", "particle_nr", "x", "y"))
 
-dispersion_schaffer <- schaffer %>% group_by(fitness_function, inertia, run_nr) %>% summarize(std_dev_position = std_dev_position(x,y)) 
+dispersion_schaffer <- schaffer %>% group_by(fitness_function, inertia, run_nr) %>% summarize(rms = rms(x,y)) 
 
-lm_schaffer <- lm(std_dev_position ~ inertia, dispersion_schaffer)
+lm_schaffer <- lm(rms ~ inertia, dispersion_schaffer)
 summary(lm_schaffer)
 
 ## Shubert
 shubert <- read.csv("netlogo_inertia_penalty_constraints_shubert_coordinates.csv", 
                      header = FALSE, col.names = c("fitness_function", "run_nr", "inertia", "particle_nr", "x", "y"))
 
-dispersion_shubert <- shubert %>% group_by(fitness_function, inertia, run_nr) %>% summarize(std_dev_position = std_dev_position(x,y)) 
+dispersion_shubert <- shubert %>% group_by(fitness_function, inertia, run_nr) %>% summarize(rms = rms(x,y)) 
 
-lm_shubert <- lm(std_dev_position ~ inertia, dispersion_shubert)
+lm_shubert <- lm(rms ~ inertia, dispersion_shubert)
 summary(lm_shubert)
 
 ## Eggholder
 eggholder <- read.csv("netlogo_inertia_penalty_constraints_eggholder_coordinates.csv", 
                      header = FALSE, col.names = c("fitness_function", "run_nr", "inertia", "particle_nr", "x", "y"))
 
-dispersion_eggholder <- eggholder %>% group_by(fitness_function, inertia, run_nr) %>% summarize(std_dev_position = std_dev_position(x,y)) 
+dispersion_eggholder <- eggholder %>% group_by(fitness_function, inertia, run_nr) %>% summarize(rms = rms(x,y)) 
 
-lm_eggholder <- lm(std_dev_position ~ inertia, dispersion_eggholder)
+lm_eggholder <- lm(rms ~ inertia, dispersion_eggholder)
 summary(lm_eggholder)
 
 ## Together
-dispersion_all <- bind_rows(dispersion_schaffer, dispersion_shubert, dispersion_eggholder)
-dispersion_all$fitness_function <- factor(dispersion_all$fitness_function, 
+experiment1_all <- bind_rows(dispersion_schaffer, dispersion_shubert, dispersion_eggholder)
+experiment1_all$fitness_function <- factor(experiment1_all$fitness_function, 
                                           levels=c("Fitness function Schaffer", "Fitness function Shubert", "Fitness function Eggholder"),
                                           labels=c("Schaffer", "Shubert", "Eggholder"))
 
-lm_all <- lm(std_dev_position ~ inertia + inertia:fitness_function, dispersion_all)
+lm_all <- lm(rms ~ inertia + fitness_function + inertia:fitness_function, experiment1_all)
 summary(lm_all)
 
-ggplot(dispersion_all, aes(x=inertia, y=std_dev_position)) + 
+ggplot(experiment1_all, aes(x=inertia, y=rms)) + 
   geom_point(aes(colour = fitness_function))
 
 
