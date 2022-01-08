@@ -215,10 +215,10 @@ to iterate
 
   set iterations (iterations + 1)
 
-  if iterations >= max-iterations
+  if termination-condition = "Max iterations" and iterations >= max-iterations
     [ stop ]
 
-  if global-best-val = [val] of true-best-patch
+  if termination-condition = "Global best" and global-best-val = [val] of true-best-patch
     [ stop ]
   tick
 
@@ -676,7 +676,7 @@ particle-inertia
 particle-inertia
 0
 1.0
-1.0
+0.35
 0.01
 1
 NIL
@@ -917,10 +917,10 @@ r
 Number
 
 SLIDER
-210
-535
-382
-568
+335
+510
+507
+543
 max-iterations
 max-iterations
 0
@@ -930,6 +930,16 @@ max-iterations
 1
 NIL
 HORIZONTAL
+
+CHOOSER
+165
+510
+327
+555
+termination-condition
+termination-condition
+"Global best" "Max iterations"
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
