@@ -1,0 +1,231 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+# General stuff
+
+
+```{r}
+install.packages("tidyverse")
+library(dplyr)
+library(ggplot2)
+
+install.packages("caret")
+library(caret)
+
+```
+
+```{r}
+
+
+std_dev_position <- function(X, Y) {
+  x_mean <- mean(X)
+  y_mean <- mean(Y)
+  n <- length(X)
+  
+  return(sqrt(1/(n-1) * sum((X - x_mean)^2 + (Y - y_mean)^2)))
+}
+
+
+```
+
+
+
+# Experiment 1: Personal-confidence effect on clustering
+
+## Shubert
+```{r}
+
+## Shubert
+shubert <- read.csv("netlogo_personal_confidence_penalty_constraints_shubert_coordinates.csv", 
+                    header = FALSE, col.names = c("fitness_function", "run_nr", "personal_confidence", "x", "y", "personal_best_val", "global_best_val"))
+
+dispersion_shubert_pos <- shubert %>% group_by(fitness_function, personal_confidence, run_nr) %>% summarize(std_dev_position = std_dev_position(x,y))
+
+dispersion_shubert_best_val <- shubert %>% group_by(fitness_function, personal_confidence, run_nr) %>% summarize(std_dev_best_val = sd(personal_best_val)) 
+
+lm_shubert <- lm(std_dev_best_val ~ personal_confidence, dispersion_shubert_best_val)
+summary(lm_shubert)
+
+
+ggplot(dispersion_shubert_pos, aes(x=personal_confidence, y=std_dev_position)) + 
+  geom_point(aes(colour = fitness_function))
+
+
+```
+
+## Schaffer
+```{r}
+schaffer <- read.csv("netlogo_personal_confidence_penalty_constraints_schaffer_coordinates.csv", 
+                    header = FALSE, col.names = c("fitness_function", "run_nr", "personal_confidence", "x", "y", "personal_best_val", "global_best_val"))
+
+dispersion_schaffer_pos <- schaffer %>% group_by(fitness_function, personal_confidence, run_nr) %>% summarize(std_dev_position = std_dev_position(x,y)) 
+
+dispersion_schaffer_best_val <- schaffer %>% group_by(fitness_function, personal_confidence, run_nr) %>% summarize(std_dev_best_val = sd(personal_best_val))
+
+lm_schaffer <- lm(std_dev_position ~ personal_confidence, dispersion_schaffer_pos)
+summary(lm_schaffer)
+
+
+ggplot(dispersion_schaffer_best_val, aes(x=personal_confidence, y=std_dev_best_val)) + 
+  geom_point(aes(colour = fitness_function))
+
+```
+
+
+
+
+## Eggholder
+```{r}
+eggholder <- read.csv("netlogo_personal_confidence_penalty_constraints_eggholder_coordinates.csv", 
+                    header = FALSE, col.names = c("fitness_function", "run_nr", "personal_confidence", "x", "y", "personal_best_val", "global_best_val"))
+
+dispersion_eggholder_pos <- eggholder %>% group_by(fitness_function, personal_confidence, run_nr) %>% summarize(std_dev_position = std_dev_position(x,y))
+
+dispersion_eggholder_best_val <- eggholder %>% group_by(fitness_function, personal_confidence, run_nr) %>% summarize(std_dev_best_val = sd(personal_best_val))
+
+lm_eggholder <- lm(std_dev_best_val ~ personal_confidence, dispersion_eggholder_best_val)
+summary(lm_eggholder)
+
+
+ggplot(dispersion_eggholder_pos, aes(x=personal_confidence, y=std_dev_position)) + 
+  geom_point(aes(colour = fitness_function))
+
+```
+
+
+
+
+
+## Plotting together standard deviation position
+```{r}
+dispersion_all_pos <- bind_rows(dispersion_schaffer_pos, dispersion_shubert_pos, dispersion_eggholder_pos)
+dispersion_all_pos$fitness_function <- factor(dispersion_all_pos$fitness_function, 
+                                          levels=c("Fitness function Schaffer", "Fitness function Shubert", "Fitness function Eggholder"),
+                                          labels=c("Schaffer", "Shubert", "Eggholder"))
+
+lm_all <- lm(std_dev_position ~ personal_confidence + personal_confidence:fitness_function, dispersion_all_pos)
+summary(lm_all)
+
+ggplot(dispersion_all_pos, aes(x=personal_confidence, y=std_dev_position)) + 
+  geom_point(aes(colour = fitness_function))
+
+```
+
+
+
+## Plotting together standard deviation personal best value
+```{r}
+dispersion_all_best_val <- bind_rows(dispersion_schaffer_best_val, dispersion_shubert_best_val, dispersion_eggholder_best_val)
+dispersion_all_best_val$fitness_function <- factor(dispersion_all_best_val$fitness_function, 
+                                          levels=c("Fitness function Schaffer", "Fitness function Shubert", "Fitness function Eggholder"),
+                                          labels=c("Schaffer", "Shubert", "Eggholder"))
+
+lm_all <- lm(std_dev_best_val ~ personal_confidence , dispersion_all_best_val)
+summary(lm_all)
+
+ggplot(dispersion_all_best_val, aes(x=personal_confidence, y=std_dev_best_val)) + 
+  geom_point(aes(colour = fitness_function))
+
+```
+
+standard deviation personal best value with interaction between fitness functions
+```{r}
+lm_all <- lm(std_dev_best_val ~ personal_confidence + personal_confidence:fitness_function, dispersion_all_best_val)
+summary(lm_all)
+
+```
+
+
+
+
+
+# Experiment 2: Convergence after iterations number
+
+## Schaffer stop
+```{r}
+schaffer <- read.csv("netlogo_speed_limit_penalty_constraints_schaffer_stop_coordinates.csv", 
+                    header = FALSE, col.names = c("fitness_function", "run_nr", "speed_limit", "x", "y", "personal_best_val", "iterations"))
+
+dispersion_schaffer <- schaffer %>% group_by(fitness_function, speed_limit, run_nr) %>% summarize(avg_iter = mean(iterations)) 
+
+lm_schaffer <- lm(avg_iter ~ speed_limit, dispersion_schaffer)
+summary(lm_schaffer)
+
+
+ggplot(dispersion_schaffer, aes(x=speed_limit, y=avg_iter)) + 
+  geom_point(aes(colour = fitness_function))
+
+```
+
+
+
+## eggholder stop
+```{r}
+eggholder <- read.csv("netlogo_speed_limit_penalty_constraints_eggholder_stop_coordinates.csv", 
+                    header = FALSE, col.names = c("fitness_function", "run_nr", "speed_limit", "x", "y", "personal_best_val", "iterations"))
+
+dispersion_eggholder <- eggholder %>% group_by(fitness_function, speed_limit) %>% summarize(avg_iter = mean(iterations)) 
+
+lm_eggholder <- lm(avg_iter ~ speed_limit, dispersion_eggholder)
+summary(lm_eggholder)
+
+
+ggplot(dispersion_eggholder, aes(x=speed_limit, y=avg_iter)) + 
+  geom_point(aes(colour = fitness_function))
+
+```
+
+## Shubert stop
+```{r}
+shubert <- read.csv("netlogo_speed_limit_penalty_constraints_shubert_stop_coordinates.csv", 
+                    header = FALSE, col.names = c("fitness_function", "run_nr", "speed_limit", "x", "y", "personal_best_val", "iterations"))
+
+dispersion_shubert <- shubert %>% group_by(fitness_function, speed_limit, run_nr) %>% summarize(avg_iter = mean(iterations)) 
+
+lm_shubert <- lm(avg_iter ~ speed_limit, dispersion_shubert)
+summary(lm_shubert)
+
+
+ggplot(dispersion_shubert, aes(x=speed_limit, y=avg_iter)) + 
+  geom_point(aes(colour = fitness_function))
+
+```
+
+
+
+
+```{r}
+dispersion_all <- bind_rows(dispersion_schaffer, dispersion_shubert, dispersion_eggholder)
+dispersion_all$fitness_function <- factor(dispersion_all$fitness_function, 
+                                          levels=c("Fitness function Schaffer", "Fitness function Shubert", "Fitness function Eggholder"),
+                                          labels=c("Schaffer", "Shubert", "Eggholder"))
+
+lm_all <- lm(avg_iter ~ speed_limit + speed_limit:fitness_function, dispersion_all)
+summary(lm_all)
+
+ggplot(dispersion_all, aes(x=speed_limit, y=avg_iter)) + 
+  geom_point(aes(colour = fitness_function))
+
+
+```
+
+
+
+
+experiment2 <- read.csv("netlogo_population_size_best_vals.csv", 
+                        header = FALSE, col.names = c("run_nr", "fitness_function", "population_size", "global_best_val"))
+
+experiment2$fitness_function <- factor(experiment2$fitness_function, 
+                                       levels=c("Fitness function Schaffer", "Fitness function Shubert", "Fitness function Eggholder"),
+                                       labels=c("Schaffer", "Shubert", "Eggholder"))
+
+lm_experiment2 <- lm(global_best_val ~ population_size, experiment2)
+summary(lm_experiment2)
+
+ggplot(experiment2, aes(x=population_size, y=global_best_val)) + 
+  geom_point(aes(colour = fitness_function), position = position_jitter(width = 1, height = 0.02))
+
+
