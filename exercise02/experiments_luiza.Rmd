@@ -19,7 +19,6 @@ library(caret)
 
 ```{r}
 
-
 std_dev_position <- function(X, Y) {
   x_mean <- mean(X)
   y_mean <- mean(Y)
@@ -140,8 +139,6 @@ summary(lm_all)
 
 
 
-
-
 # Experiment 2: Convergence after iterations number
 
 ## Schaffer stop
@@ -213,19 +210,38 @@ ggplot(dispersion_all, aes(x=speed_limit, y=avg_iter)) +
 ```
 
 
+# Experiment 3
+speed limit based on constraints & constraints handling methods
 
 
-experiment2 <- read.csv("netlogo_population_size_best_vals.csv", 
-                        header = FALSE, col.names = c("run_nr", "fitness_function", "population_size", "global_best_val"))
+## penalty
+```{r}
+schaffer <- read.csv("netlogo_schaffer_penalty_coordinates.csv", 
+                    header = FALSE, col.names = c("constraint", "constraint_handling_method", "run_nr", "particle_speed_limit", "x", "y", "personal_best_val", "global_best_val"))
 
-experiment2$fitness_function <- factor(experiment2$fitness_function, 
-                                       levels=c("Fitness function Schaffer", "Fitness function Shubert", "Fitness function Eggholder"),
-                                       labels=c("Schaffer", "Shubert", "Eggholder"))
+dispersion_schaffer <- schaffer %>% group_by(constraint, particle_speed_limit) %>% summarize(std_dev_position = std_dev_position(x, y))
 
-lm_experiment2 <- lm(global_best_val ~ population_size, experiment2)
-summary(lm_experiment2)
-
-ggplot(experiment2, aes(x=population_size, y=global_best_val)) + 
-  geom_point(aes(colour = fitness_function), position = position_jitter(width = 1, height = 0.02))
+lm_schaffer <- lm(std_dev_position ~ particle_speed_limit:constraint, dispersion_schaffer)
+summary(lm_schaffer)
 
 
+ggplot(dispersion_schaffer, aes(x=particle_speed_limit, y=std_dev_position)) + 
+  geom_point(aes(colour = constraint))
+
+```
+
+## rejection
+```{r}
+schaffer <- read.csv("netlogo_schaffer_rejection_coordinates.csv", 
+                    header = FALSE, col.names = c("constraint", "constraint_handling_method", "run_nr", "particle_speed_limit", "x", "y", "personal_best_val", "global_best_val"))
+
+dispersion_schaffer <- schaffer %>% group_by(constraint, particle_speed_limit, run_nr) %>% summarize(std_dev_position = sd(personal_best_val))
+
+lm_schaffer <- lm(std_dev_position ~particle_speed_limit:constraint, dispersion_schaffer)
+summary(lm_schaffer)
+
+
+ggplot(dispersion_schaffer, aes(x=particle_speed_limit, y=std_dev_position)) + 
+  geom_point(aes(colour = constraint))
+
+```
