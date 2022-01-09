@@ -215,7 +215,7 @@ to iterate
 
   set iterations (iterations + 1)
 
-  if termination-condition = "Max iterations" and iterations >= max-iterations
+  if iterations >= max-iterations
     [ stop ]
 
   if termination-condition = "Global best" and global-best-val = [val] of true-best-patch
@@ -631,7 +631,7 @@ population-size
 population-size
 1
 100
-40.0
+45.0
 1
 1
 NIL
@@ -646,7 +646,7 @@ personal-confidence
 personal-confidence
 0
 2
-1.5
+0.4
 0.1
 1
 NIL
@@ -661,7 +661,7 @@ swarm-confidence
 swarm-confidence
 0
 2
-1.5
+0.8
 0.1
 1
 NIL
@@ -676,7 +676,7 @@ particle-inertia
 particle-inertia
 0
 1.0
-0.35
+0.6
 0.01
 1
 NIL
@@ -718,7 +718,7 @@ particle-speed-limit
 particle-speed-limit
 1
 20
-20.0
+10.0
 1
 1
 NIL
@@ -770,7 +770,7 @@ CHOOSER
 fitness_function
 fitness_function
 "Example function" "Fitness function Langermann" "Fitness function Schwefel" "Fitness function Shubert" "Fitness function Schaffer" "Fitness function Eggholder" "Fitness function Easom" "Fitness function Booth"
-7
+4
 
 SWITCH
 10
@@ -1297,6 +1297,9 @@ file-close</final>
     <enumeratedValueSet variable="personal-confidence">
       <value value="1.2"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="termination-condition">
+      <value value="&quot;Max iterations&quot;"/>
+    </enumeratedValueSet>
   </experiment>
   <experiment name="inertia_penalty_constraints_shubert" repetitions="20" runMetricsEveryStep="false">
     <setup>setup</setup>
@@ -1363,6 +1366,9 @@ file-close</final>
     </enumeratedValueSet>
     <enumeratedValueSet variable="personal-confidence">
       <value value="1.2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="termination-condition">
+      <value value="&quot;Max iterations&quot;"/>
     </enumeratedValueSet>
   </experiment>
   <experiment name="inertia_penalty_constraints_eggholder" repetitions="20" runMetricsEveryStep="false">
@@ -1431,6 +1437,9 @@ file-close</final>
     <enumeratedValueSet variable="personal-confidence">
       <value value="1.2"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="termination-condition">
+      <value value="&quot;Max iterations&quot;"/>
+    </enumeratedValueSet>
   </experiment>
   <experiment name="population_size" repetitions="20" runMetricsEveryStep="false">
     <setup>setup</setup>
@@ -1491,6 +1500,9 @@ file-close</final>
     <enumeratedValueSet variable="particle-speed-limit">
       <value value="10"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="termination-condition">
+      <value value="&quot;Max iterations&quot;"/>
+    </enumeratedValueSet>
   </experiment>
   <experiment name="inertia_convergence" repetitions="30" runMetricsEveryStep="false">
     <setup>setup</setup>
@@ -1550,6 +1562,9 @@ file-close</final>
     </enumeratedValueSet>
     <enumeratedValueSet variable="particle-speed-limit">
       <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="termination-condition">
+      <value value="&quot;Global best&quot;"/>
     </enumeratedValueSet>
   </experiment>
   <experiment name="speed_limit" repetitions="30" runMetricsEveryStep="false">
@@ -1615,6 +1630,9 @@ file-close</final>
       <value value="1.5"/>
     </enumeratedValueSet>
     <steppedValueSet variable="particle-speed-limit" first="1" step="1" last="20"/>
+    <enumeratedValueSet variable="termination-condition">
+      <value value="&quot;Global best&quot;"/>
+    </enumeratedValueSet>
   </experiment>
 </experiments>
 @#$#@#$#@
