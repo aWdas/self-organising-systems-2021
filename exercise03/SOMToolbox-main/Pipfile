@@ -9,6 +9,9 @@ pandas = "*"
 numpy = "*"
 holoviews = "*"
 panel = "*"
+bokeh = "==2.3.1"
+matplotlib = "*"
+networkx = "*"
 
 [dev-packages]
 
