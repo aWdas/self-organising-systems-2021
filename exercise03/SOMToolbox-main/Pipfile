@@ -12,6 +12,11 @@ panel = "*"
 bokeh = "==2.3.1"
 matplotlib = "*"
 networkx = "*"
+minisom = "*"
+scipy = "*"
+sklearn = "*"
+scikit-image = "*"
+tk = "*"
 
 [dev-packages]
 
