@@ -4,5 +4,5 @@ This repository contains the code for the exercises of the SOS lecture of the wi
 
 Group Members:
 - Jan Hadl (01609664)
-- Markus (11813846)
+- Markus Fleischmann (11813846)
 - Luiza Corpaci (12037284)
